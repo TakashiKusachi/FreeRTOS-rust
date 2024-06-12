@@ -7,17 +7,15 @@
 use cortex_m::asm;
 use cortex_m_rt::exception;
 use cortex_m_rt::{entry, ExceptionFrame};
-use embedded_hal::digital::v2::OutputPin;
+use embedded_hal::digital::OutputPin;
 use freertos_rust::*;
 use core::alloc::Layout;
 use stm32f4xx_hal::gpio::*;
 
 use cortex_m;
 use stm32f4xx_hal as hal;
+use stm32f4xx_hal::pac::Peripherals;
 
-use crate::hal::{
-    stm32::{Peripherals},
-};
 
 extern crate panic_halt; // panic handler
 
@@ -75,7 +73,7 @@ fn main() -> ! {
 }
 
 #[exception]
-fn DefaultHandler(_irqn: i16) {
+unsafe fn DefaultHandler(_irqn: i16) {
 // custom default handler
 // irqn is negative for Cortex-M exceptions
 // irqn is positive for device specific (line IRQ)
@@ -84,7 +82,7 @@ fn DefaultHandler(_irqn: i16) {
 }
 
 #[exception]
-fn HardFault(_ef: &ExceptionFrame) -> ! {
+unsafe fn HardFault(_ef: &ExceptionFrame) -> ! {
 // Blink 3 times long when exception occures
     delay_n(10);
     for _ in 0..3 {
